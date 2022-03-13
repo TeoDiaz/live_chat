@@ -5,6 +5,7 @@ defmodule LiveChatWeb.Presence do
   See the [`Phoenix.Presence`](https://hexdocs.pm/phoenix/Phoenix.Presence.html)
   docs for more details.
   """
-  use Phoenix.Presence, otp_app: :live_chat,
-                        pubsub_server: LiveChat.PubSub
+  use Phoenix.Presence,
+    otp_app: :live_chat,
+    pubsub_server: LiveChat.PubSub
 end

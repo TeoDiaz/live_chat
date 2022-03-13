@@ -20,6 +20,7 @@ defmodule LiveChatWeb.RoomLive do
        message: "",
        messages: [],
        user_list: [],
+       total_messages: [],
        temporary_assigns: [messages: []],
        changeset: %{}
      )}
@@ -40,7 +41,14 @@ defmodule LiveChatWeb.RoomLive do
 
   @impl true
   def handle_info(%{event: "new-message", payload: message}, socket) do
-    {:noreply, assign(socket, messages: [message])}
+    message = message |> Map.put(:type, :user)
+
+    socket =
+      socket
+      |> assign(messages: [message], total_messages: socket.assigns.total_messages ++ [message])
+      |> push_event("new_message", %{})
+
+    {:noreply, socket}
   end
 
   @impl true
@@ -61,16 +69,23 @@ defmodule LiveChatWeb.RoomLive do
 
     user_list = LiveChatWeb.Presence.list(socket.assigns.topic) |> Map.keys()
 
-    {:noreply, assign(socket, messages: join_messages ++ leave_messages, user_list: user_list)}
+    socket =
+      socket
+      |> assign(messages: join_messages ++ leave_messages, user_list: user_list)
+      |> push_event("new_message", %{})
+
+    {:noreply, socket}
   end
 
-  def display_message(%{type: :system} = assigns),
-    do: ~H"""
-    <p id={@uuid}><em><%= @content %></em></p> 
+  def display_message(%{type: :system} = assigns) do
+    ~H"""
+      <span id={@uuid} class="px-4 py-2 m-2 rounded-lg block rounded-bl-none bg-gray-300 text-gray-600 w-fit"><%= @content %></span>
     """
+  end
 
-  def display_message(assigns),
-    do: ~H"""
-    <p id={@uuid}><strong> <%= @username %></strong>: <%= @content%></p> 
+  def display_message(assigns) do
+    ~H"""
+      <span id={@uuid} class="break-words max-w-md px-4 py-2 m-2 rounded-lg block rounded-bl-none bg-gray-300 text-gray-600 w-fit"><%= @username %>: <%= @content %></span>
     """
+  end
 end

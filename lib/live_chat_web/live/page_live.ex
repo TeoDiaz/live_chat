@@ -10,7 +10,7 @@ defmodule LiveChatWeb.PageLive do
   @impl true
   def handle_event("random-room", _params, socket) do
     random_slug = "/" <> MnemonicSlugs.generate_slug(4)
-    
+
     {:noreply, push_redirect(socket, to: random_slug)}
   end
 end
