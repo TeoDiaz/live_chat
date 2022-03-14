@@ -11,6 +11,7 @@ import Config
 # before starting your production server.
 config :live_chat, LiveChatWeb.Endpoint,
   url: [scheme: "https", host: "phx-live-chat.herokuapp.com", port: 443],
+  check_origin: false,
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
   cache_static_manifest: "priv/static/cache_manifest.json"
 
