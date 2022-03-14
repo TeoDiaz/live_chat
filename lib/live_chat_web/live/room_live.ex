@@ -40,7 +40,8 @@ defmodule LiveChatWeb.RoomLive do
   end
 
   @impl true
-  def handle_info(%{event: "new-message", payload: message}, socket) do
+  def handle_info(%{event: "new-message", payload: message}, socket)
+      when is_binary(message.content) and bit_size(message.content) > 0 do
     message = message |> Map.put(:type, :user)
 
     socket =
@@ -48,6 +49,10 @@ defmodule LiveChatWeb.RoomLive do
       |> assign(messages: [message], total_messages: socket.assigns.total_messages ++ [message])
       |> push_event("new_message", %{})
 
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "new-message"}, socket) do
     {:noreply, socket}
   end
 
@@ -78,13 +83,12 @@ defmodule LiveChatWeb.RoomLive do
   end
 
   def display_message(%{type: :system} = assigns) do
-  
     text_color =
       case String.contains?(assigns.content, "joined") do
         true -> "text-green-600"
         false -> "text-red-600"
       end
-      
+
     classes = "px-4 py-2 m-2 rounded-lg block rounded-bl-none w-fit italic " <> text_color
 
     ~H"""
