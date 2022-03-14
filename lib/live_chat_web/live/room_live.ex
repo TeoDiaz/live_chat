@@ -78,8 +78,17 @@ defmodule LiveChatWeb.RoomLive do
   end
 
   def display_message(%{type: :system} = assigns) do
+  
+    text_color =
+      case String.contains?(assigns.content, "joined") do
+        true -> "text-green-600"
+        false -> "text-red-600"
+      end
+      
+    classes = "px-4 py-2 m-2 rounded-lg block rounded-bl-none w-fit italic " <> text_color
+
     ~H"""
-      <span id={@uuid} class="px-4 py-2 m-2 rounded-lg block rounded-bl-none bg-gray-300 text-gray-600 w-fit"><%= @content %></span>
+      <span id={@uuid} class={classes}> System: <%= @content %></span>
     """
   end
 
